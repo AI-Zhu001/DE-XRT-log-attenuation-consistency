@@ -1,10 +1,10 @@
-# DE-XRT Thickness Consistency Regularization for Copper Ore Sorting
+# Log-Domain Attenuation Consistency Regularization for DE-XRT Measurement Interpretation
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-This repository contains the official source code and data for the paper:
+This repository contains the source code for the main training and evaluation procedures used in the paper:
 
-**"Enhancing Robustness of Copper Ore Sorting in DE-XRT Imaging Through Physically-Informed Thickness-Consistency Regularization"**  
+**"Robust Interpretation of Dual-Energy X-Ray Transmission Measurements Using Log-Domain Attenuation Consistency Regularization"**
 *Zhu Zhi-yong, He Jian-feng, Wang Xue-yuan, Nie Feng-jun, Wang Wen, Zou Yang-hui, Li Wei-dong, Zhong Guo-yun, Ye Zhi-Xiang, Diao Fan*
 
 ## 📝 Overview
@@ -126,7 +126,34 @@ python train_resnet_consistency.py \
 ```     
 Multi‑seed experiments: In our paper, each method was trained with 5 different random seeds. The command above shows an example with --seed 0. To reproduce the full results, run the same command with multiple distinct seeds (you may choose any set of 5 seeds) and average the results. For Swin‑Transformer, a batch script run_swin_5seeds.sh is provided.
 
-4. Evaluation
+4. Channel-Independent Consistency Variant
+
+This variant is used for the channel-independent attenuation-response shift experiment reported in the paper. In this setting, the high- and low-energy log-domain shifts are sampled independently during training. This experiment is designed as an assumption-stress test and extension of the synchronized-shift formulation.
+
+Training:
+```bash
+python train_resnet_channel_independent_consistency.py \
+    --csv-path split_outputs/copper_xray_all_splits.csv \
+    --data-root /path/to/dataset \
+    --epochs 20 \
+    --batch-size 32 \
+    --img-size 192 \
+    --lr 1e-4 \
+    --weight-decay 1e-4 \
+    --brightness-delta-min -0.15 \
+    --brightness-delta-max 0.15 \
+    --brightness-apply-p 0.5 \
+    --delta-h-min 0.0 \
+    --delta-h-max 0.15 \
+    --delta-l-min 0.0 \
+    --delta-l-max 0.15 \
+    --consistency-weight 0.5 \
+    --log-dir logs/channel_independent_consistency \
+    --ckpt-path checkpoints/channel_independent_consistency.pth \
+    --pretrained \
+    --seed 0
+``` 
+5. Evaluation
 Clean test set
 ```bash
 python eval_thickness_shift.py \
@@ -152,7 +179,7 @@ python eval_thickness_shift.py \
     --delta-list -0.25,-0.15,-0.05,0.0,0.05,0.15,0.25 \
     --apply-p 1.0
 ```   
-5. Swin Transformer (Architectural Generalizability)
+6. Swin Transformer (Architectural Generalizability)
 Train Swin‑T with the proposed consistency regularization (learning rate 1e-4, consistent with the paper):
 ```bash
 python train_swin_consistency.py \
@@ -185,6 +212,8 @@ For multi‑seed experiments (5 seeds), you can use the provided batch script:
 bash run_swin_5seeds.sh
 ```
 
+
+
 ## 📁 Repository Structure
 ```text
 ├── copper_dataset_split.py # CSV generation with thickness groups
@@ -199,6 +228,8 @@ bash run_swin_5seeds.sh
 ├── plot_shift_summary_auto.py # Plot Macro‑F1 and worst‑group accuracy curves
 ├── run_swin_5seeds.sh # Batch training script for Swin (5 seeds)
 ├── requirements.txt # Python dependencies
+├── train_resnet_channel_independent_consistency.py # Channel-independent consistency variant
+├── eval_channel_independent_shift.py # Evaluate channel-independent log-domain shifts
 ├── LICENSE # MIT License
 └── README.md # This file
 ```
@@ -209,10 +240,10 @@ bash run_swin_5seeds.sh
 If you find this code useful for your research, please cite our paper:
 
 ```bibtex
-@article{Zhu2026Thickness,
-  title={Enhancing Robustness of Copper Ore Sorting in DE-XRT Imaging Through Physically-Informed Thickness-Consistency Regularization},
+@article{Zhu2026LogDomainAttenuationConsistency,
+  title={Robust Interpretation of Dual-Energy X-Ray Transmission Measurements Using Log-Domain Attenuation Consistency Regularization},
   author={Zhu, Zhi-yong and He, Jian-feng and Wang, Xue-yuan and Nie, Feng-jun and Wang, Wen and Zou, Yang-hui and Li, Wei-dong and Zhong, Guo-yun and Ye, Zhi-Xiang and Diao, Fan},
-  journal={Computers \& Geosciences},
+  journal={Submitted},
   year={2026}
 }
 ```
