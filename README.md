@@ -17,6 +17,7 @@ This repository contains the main training, evaluation, and analysis code associ
 This work studies robustness in dual-energy X-ray transmission (DE-XRT) ore classification from the perspective of **paired high-/low-energy response sensitivity**.
 
 Instead of treating the perturbation as a calibrated physical-thickness transformation, we formulate controlled changes directly in the paired log-response space:
+We formulate controlled changes directly in the paired log-response space:
 
 $$
 \mathbf{u}
@@ -27,43 +28,46 @@ $$
 \end{bmatrix}.
 $$
 
-A two-channel response perturbation can be decomposed into
+A two-channel response perturbation can be decomposed into:
 
 $$
 \Delta
 =
 \delta_c
 \begin{bmatrix}
-1\\
+1 \\
 1
 \end{bmatrix}
 +
 \delta_d
 \begin{bmatrix}
-1\\
+1 \\
 -1
-\end{bmatrix},
+\end{bmatrix}.
 $$
 
-where
+Here,
 
-- \(v_{\mathrm{com}}=(1,1)\) denotes a **common-mode response direction**;
-- \(v_{\mathrm{diff}}=(1,-1)\) denotes a **channel-differential response direction**.
+- $v_{\mathrm{com}}=(1,1)$ denotes the **common-mode response direction**;
+- $v_{\mathrm{diff}}=(1,-1)$ denotes the **channel-differential response direction**.
 
 The main method, **Differential-Consistency**, applies paired-view consistency regularization specifically along the differential response direction:
 
 $$
-\delta_H = s a,\qquad
+\delta_H = s a,
+\qquad
 \delta_L = -s a,
 $$
 
-with
+where
 
 $$
-a\sim U(0,0.15),\qquad s\in\{-1,+1\}.
+a \sim U(0,0.15),
+\qquad
+s \in \{-1,+1\}.
 $$
 
-The training objective is
+The training objective is:
 
 $$
 \mathcal{L}
@@ -76,13 +80,13 @@ $$
 \left\|
 z_{\mathrm{diff}}
 -
-\mathrm{sg}(z_{\mathrm{clean}})
+\operatorname{sg}(z_{\mathrm{clean}})
 \right\|_2^2,
 $$
 
-with \(\lambda=0.5\).
+where $\operatorname{sg}(\cdot)$ denotes the stop-gradient operation and $\lambda=0.5$.
 
-The perturbation is used as a **controlled channel-level DE-XRT response shift**. It is **not** interpreted as a calibrated millimeter-scale thickness transformation.
+The perturbation is used as a **controlled channel-level DE-XRT response shift**. It is not interpreted as a calibrated millimeter-scale thickness transformation.
 
 ---
 
